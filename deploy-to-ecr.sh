@@ -6,8 +6,13 @@ ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
 # Set the AWS region (You can pass this as an argument or use a default)
 REGION=${1:-us-east-1}  # Default to us-east-1 if no region is provided
 
+# Set the environment (e.g., test or prod), default to "test"
+ENVIRONMENT=${3:-test}
+
 # Set the repository name
-REPOSITORY_NAME="capstone-al-spring"
+REPOSITORY_NAME="capstone-al-spring-${ENVIRONMENT}"
+
+echo "📦 Targeting repository: $REPOSITORY_NAME in $REGION (env: $ENVIRONMENT)"
 
 # Check if the repository exists
 REPO_EXISTS=$(aws ecr describe-repositories --repository-names $REPOSITORY_NAME --region $REGION --query 'repositories[0].repositoryName' --output text)
