@@ -72,9 +72,24 @@ pipeline {
 
                         chmod +x ./deploy-to-ecr.sh
                         ./deploy-to-ecr.sh ${AWS_REGION} ${VERSION} ${ENVIRONMENT}
+						docker image prune -a --filter "until=24h" -f
                     '''
                 }
             }
         }
+		
+		stage('Trigger Deployment') {
+			steps {
+				script {
+					build job: 'Deploy Spring',
+						  parameters: [
+							  string(name: 'REGION', value: "${AWS_REGION}"),
+							  string(name: 'VERSION', value: "${VERSION}"),
+							  string(name: 'ENVIRONMENT', value: "${ENVIRONMENT}")
+						  ],
+						  wait: false
+				}
+			}
+		}
     }
 }
